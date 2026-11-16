@@ -15,24 +15,65 @@ loginCloseOverlay.addEventListener('click', loginCloseFunc);
 loginCloseBtn.addEventListener('click', loginCloseFunc);
 
 
-// mobile menu variables
-const mobileMenuOpenBtn = document.querySelectorAll('[data-mobile-menu-open-btn]');
-const mobileMenu = document.querySelectorAll('[data-mobile-menu]');
-const mobileMenuCloseBtn = document.querySelectorAll('[data-mobile-menu-close-btn]');
+// Mobile navigation and product sidebar controls
+const mobileNavigationMenu = document.querySelector('.mobile-navigation-menu');
+const productSidebar = document.querySelector('.sidebar');
+const mobileNavigationOpenBtns = document.querySelectorAll('.mobile-bottom-navigation [data-mobile-menu-open-btn]');
+const mobileNavigationCloseBtn = document.querySelector('[data-mobile-menu-close-btn]');
+const sidebarOpenBtn = mobileNavigationOpenBtns[1];
+const sidebarCloseBtn = document.querySelector('[data-sidebar-close-btn]');
 
-for (let i = 0; i < mobileMenuOpenBtn.length; i++) {
+const sidebarBackdrop = document.createElement('button');
+sidebarBackdrop.type = 'button';
+sidebarBackdrop.className = 'sidebar-backdrop';
+sidebarBackdrop.setAttribute('aria-label', 'Close categories sidebar');
+sidebarBackdrop.setAttribute('aria-hidden', 'true');
+document.body.appendChild(sidebarBackdrop);
 
-  const mobileMenuCloseFunc = function () {
-    mobileMenu[i].classList.remove('active');
-  };
+const closeMobileNavigation = function () {
+  mobileNavigationMenu?.classList.remove('active');
+};
 
-  mobileMenuOpenBtn[i].addEventListener('click', function () {
-    mobileMenu[i].classList.add('active');
-  });
+const closeProductSidebar = function () {
+  productSidebar?.classList.remove('active');
+  sidebarBackdrop.classList.remove('active');
+  document.body.classList.remove('sidebar-open');
+  sidebarOpenBtn?.setAttribute('aria-expanded', 'false');
+};
 
-  mobileMenuCloseBtn[i].addEventListener('click', mobileMenuCloseFunc);
-}
+mobileNavigationOpenBtns[0]?.addEventListener('click', function () {
+  mobileNavigationMenu?.classList.add('active');
+});
 
+mobileNavigationCloseBtn?.addEventListener('click', closeMobileNavigation);
+
+sidebarOpenBtn?.setAttribute('aria-controls', 'product-sidebar');
+sidebarOpenBtn?.setAttribute('aria-expanded', 'false');
+productSidebar?.setAttribute('id', 'product-sidebar');
+
+sidebarOpenBtn?.addEventListener('click', function () {
+  if (window.matchMedia('(min-width: 1024px)').matches) return;
+  productSidebar?.classList.add('active');
+  sidebarBackdrop.classList.add('active');
+  document.body.classList.add('sidebar-open');
+  sidebarOpenBtn.setAttribute('aria-expanded', 'true');
+});
+
+sidebarCloseBtn?.addEventListener('click', closeProductSidebar);
+sidebarBackdrop.addEventListener('click', closeProductSidebar);
+
+document.addEventListener('keydown', function (event) {
+  if (event.key === 'Escape') {
+    closeMobileNavigation();
+    closeProductSidebar();
+  }
+});
+
+window.addEventListener('resize', function () {
+  if (window.matchMedia('(min-width: 1024px)').matches) {
+    closeProductSidebar();
+  }
+});
 
 // accordion variables
 const accordionBtn = document.querySelectorAll('[data-accordion-btn]');
